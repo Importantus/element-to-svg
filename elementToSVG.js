@@ -74,6 +74,12 @@ export default class ElementToSVG {
      */
     constructor(elementContainer, paths, options = {}) {
         /**
+         * The options for initializing the ElementToSVG.
+         * @type {Object}
+        */
+        this.options = options;
+
+        /**
          * The container element.
          * @type {HTMLElement}
          */
@@ -83,10 +89,10 @@ export default class ElementToSVG {
          * The array of HTML elements.
          * @type {Array}
          */
-        this.htmlElements = Array.from({ length: options.numElements || ElementToSVG.DEFAULT_NUM_ELEMENTS }, (_, index) => {
+        this.htmlElements = Array.from({ length: this.options.numElements || ElementToSVG.DEFAULT_NUM_ELEMENTS }, (_, index) => {
             let element
             if (options.element) {
-                element = options.element(index);
+                element = this.options.element(index);
             } else {
                 element = ElementToSVG.DEFAULT_ELEMENT(index);
             }
@@ -98,14 +104,14 @@ export default class ElementToSVG {
          * The transition function for animating to path.
          * @type {function}
          */
-        this.transition = options.transition || (() => [])
+        this.transition = this.options.transition || (() => [])
 
         if (options.blink) {
             /**
        * The interval for blinking elements.
        * @type {number}
        */
-            this.interval = setInterval(() => this._blink(), options.blinkOptions.blinkInterval || ElementToSVG.DEFAULT_BLINK_INTERVAL);
+            this.interval = setInterval(() => this._blink(), this.options.blinkOptions.blinkInterval || ElementToSVG.DEFAULT_BLINK_INTERVAL);
         }
 
         /**
@@ -127,10 +133,10 @@ export default class ElementToSVG {
             element.animate(
                 [
                     { opacity: 1 },
-                    { opacity: options.blinkOptions.blinkOpacity || ElementToSVG.DEFAULT_BLINK_OPACITY },
+                    { opacity: this.options.blinkOptions.blinkOpacity || ElementToSVG.DEFAULT_BLINK_OPACITY },
                     { opacity: 1 }
                 ],
-                { duration: options.blinkOptions.blinkDuration || ElementToSVG.DEFAULT_BLINK_DURATION, iterations: 1 }
+                { duration: this.options.blinkOptions.blinkDuration || ElementToSVG.DEFAULT_BLINK_DURATION, iterations: 1 }
             ).addEventListener('finish', () => {
                 element.removeAttribute('data-blink');
             });
@@ -177,7 +183,7 @@ export default class ElementToSVG {
 
                         { left: goalLeft + 'px', top: goalTop + 'px' }
                     ],
-                    { duration: options.animationDuration || ElementToSVG.DEFAULT_PATH_DURATION, iterations: 1, fill: 'forwards' }
+                    { duration: this.options.animationDuration || ElementToSVG.DEFAULT_PATH_DURATION, iterations: 1, fill: 'forwards' }
                 );
             } else {
                 htmlElement.style.left = goalLeft + 'px';
